@@ -1,24 +1,30 @@
 version: "3.9"
 services:
-  mysql:
-    image: mysql:8.0.26
-    environment:
-      - MYSQL_ROOT_PASSWORD=password
-      - MYSQL_DATABASE=payments
+  payment-gate-way-db:
+    image: postgres:alpine
+    container_name: payment-gate-way-db
     ports:
-      - "3306:3306"
+      - 5432:5432 # first port is what you connect to the db with
+    environment:
+      POSTGRES_DB: payment-gate-way-db
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: letmein
+      # To enter container in docker cli <psql postgres-db -U root>
   payment-gw:
-    image: payment-gw:0.0.1
+    image: patrikjmelander/payment-gate-way:v1
     environment:
-      - MYSQL_HOST=mysql
-      - SPRING_RABBITMQ_HOST=rabbit
-      - SPRING_RABBITMQ_PORT=5672
+      SPRING_DB_URL: jdbc:postgresql://payment-gate-way-db:5432/payment-gate-way-db
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: letmein
+      SPRING_RABBITMQ_HOST: rabbit
+      SPRING_RABBITMQ_PORT: 5672
     ports:
-      - "8080:8080"
+      - 8080:8080
     depends_on:
+      - payment-gate-way-db
       - rabbit
   rabbit:
     image: rabbitmq:3.9.5
     ports:
-      - "5672:5672"
-      - "15672:15672"
+      - 5672:5672
+      - 15672:15672
