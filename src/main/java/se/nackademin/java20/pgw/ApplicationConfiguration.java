@@ -22,11 +22,12 @@ import javax.persistence.EntityManager;
 public class ApplicationConfiguration {
     final String fanoutExchangeName = "payments-exchange";
 
+
     static final String queueName = "payments";
 
     @Bean
-    public PaymentNotificationService paymentNotificationService(RabbitTemplate template) {
-        return new RabbitNotificationService(template);
+    public PaymentNotificationService paymentNotificationService(RabbitTemplate template, ObjectMapper objectMapper) {
+        return new RabbitNotificationService(template, objectMapper);
     }
 
     @Bean

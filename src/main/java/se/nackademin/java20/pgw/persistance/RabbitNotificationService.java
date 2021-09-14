@@ -11,18 +11,26 @@ import se.nackademin.java20.pgw.domain.PaymentNotificationService;
 public class RabbitNotificationService implements PaymentNotificationService {
     private final static Logger LOG = LoggerFactory.getLogger(RabbitNotificationService.class);
 
+
+    private final ObjectMapper objectMapper;
     private final RabbitTemplate template;
 
-    public RabbitNotificationService(RabbitTemplate template) {
+    public RabbitNotificationService(RabbitTemplate template, ObjectMapper objectMapper) {
 
         this.template = template;
+        this.objectMapper = objectMapper;
     }
 
     @Override
     public void notifyPaid(Payment payment) {
-        PaymentMessageDto object = new PaymentMessageDto(payment.getReference(), "" + payment.getId(), payment.getStatus());
-        LOG.info("Sending {}", object);
-        template.convertAndSend("payments-exchange", "", object);
+        try {
+            //String object = objectMapper.writeValueAsString(new PaymentMessageDto(payment.getReference(), "" + payment.getId(), payment.getStatus()));
+            String object = objectMapper.writeValueAsString((payment.getReference() + "," + payment.getId() +","+ payment.getStatus()));
+            LOG.info("Sending {}", object);
+            template.convertAndSend("payments-exchange", "", object);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 }
