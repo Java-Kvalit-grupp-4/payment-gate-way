@@ -18,4 +18,12 @@ public class PaymentMessageDto {
         this.status = status;
     }
 
+    @Override
+    public String toString() {
+        return "PaymentMessageDto{" +
+                "reference='" + reference + '\'' +
+                ", paymentId='" + paymentId + '\'' +
+                ", status='" + status + '\'' +
+                '}';
+    }
 }

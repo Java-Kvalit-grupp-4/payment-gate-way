@@ -12,22 +12,17 @@ public class RabbitNotificationService implements PaymentNotificationService {
     private final static Logger LOG = LoggerFactory.getLogger(RabbitNotificationService.class);
 
     private final RabbitTemplate template;
-    private final ObjectMapper objectMapper;
 
-    public RabbitNotificationService(RabbitTemplate template, ObjectMapper objectMapper) {
+    public RabbitNotificationService(RabbitTemplate template) {
 
         this.template = template;
-        this.objectMapper = objectMapper;
     }
 
     @Override
     public void notifyPaid(Payment payment) {
-        try {
-            String object = objectMapper.writeValueAsString(new PaymentMessageDto(payment.getReference(), "" + payment.getId(), payment.getStatus()));
-            LOG.info("Sending {}", object);
-            template.convertAndSend("payments-exchange", payment.getReference(), object);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        PaymentMessageDto object = new PaymentMessageDto(payment.getReference(), "" + payment.getId(), payment.getStatus());
+        LOG.info("Sending {}", object);
+        template.convertAndSend("payments-exchange", "", object);
+
     }
 }

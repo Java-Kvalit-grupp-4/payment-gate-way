@@ -47,7 +47,7 @@ public class PaymentService {
         LOG.info("Marking payment {} as paid", payment.getId());
         payment.markAsPaid();
         paymentRepository.save(payment);
-        paymentNotificationService.notifyPaid(payment);
+        paymentNotificationService.notifyPaid(payment);//Skickar ett payment object till hakim --->
 
     }
 }

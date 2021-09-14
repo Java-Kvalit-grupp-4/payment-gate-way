@@ -1,11 +1,11 @@
 package se.nackademin.java20.pgw;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.TopicExchange;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.springframework.amqp.core.*;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -20,6 +20,34 @@ import javax.persistence.EntityManager;
 @Configuration
 @EnableScheduling
 public class ApplicationConfiguration {
+    final String fanoutExchangeName = "payments-exchange";
+
+    static final String queueName = "payments";
+
+    @Bean
+    public PaymentNotificationService paymentNotificationService(RabbitTemplate template) {
+        return new RabbitNotificationService(template);
+    }
+
+    @Bean
+    FanoutExchange exchange() {
+        return new FanoutExchange(fanoutExchangeName);
+    }
+
+
+    @Bean
+    public RabbitTemplate rabbitTemplate(final ConnectionFactory connectionFactory, final Jackson2JsonMessageConverter converter) {
+        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+        rabbitTemplate.setMessageConverter(converter);
+        return rabbitTemplate;
+    }
+
+    @Bean
+    public Jackson2JsonMessageConverter producerJackson2MessageConverter(ObjectMapper objectMapper) {
+        objectMapper.registerModule(new JavaTimeModule());
+        return new Jackson2JsonMessageConverter(objectMapper);
+    }
+    //...............................................................................................
 
     @Bean
     public PaymentRepository paymentRepository(EntityManager em) {
@@ -27,32 +55,21 @@ public class ApplicationConfiguration {
     }
 
     @Bean
-    public PaymentNotificationService paymentNotificationService(RabbitTemplate template, ObjectMapper objectMapper) {
-        return new RabbitNotificationService(template, objectMapper);
+    public PaymentService personalFinanceService(PaymentRepository paymentRepository, PaymentNotificationService paymentNotificationService) {
+        return new PaymentService(paymentRepository, paymentNotificationService);
     }
 
-    final String topicExchangeName = "payments-exchange";
-
-    static final String queueName = "payments";
 
     @Bean
     Queue queue() {
         return new Queue(queueName, false);
     }
 
-    @Bean
-    TopicExchange exchange() {
-        return new TopicExchange(topicExchangeName);
-    }
+
 
     @Bean
-    Binding binding(Queue queue, TopicExchange exchange) {
-        return BindingBuilder.bind(queue).to(exchange).with("#");
-    }
-
-    @Bean
-    public PaymentService personalFinanceService(PaymentRepository paymentRepository, PaymentNotificationService paymentNotificationService) {
-        return new PaymentService(paymentRepository, paymentNotificationService);
+    public Binding declareBindingGeneric() {
+        return new Binding("payments", Binding.DestinationType.QUEUE, "payments-exchange", "", null);
     }
 
 
