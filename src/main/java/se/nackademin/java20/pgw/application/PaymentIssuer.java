@@ -21,5 +21,6 @@ public class PaymentIssuer {
     public void scheduleFixedDelayTask() {
         LOG.info("Checking payment statuses..");
         paymentService.performPayments();
+
     }
 }
