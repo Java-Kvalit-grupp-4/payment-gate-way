@@ -26,15 +26,20 @@ public class ApplicationConfiguration {
     static final String queueName = "payments";
 
     @Bean
-    public PaymentNotificationService paymentNotificationService(RabbitTemplate template, ObjectMapper objectMapper) {
-        return new RabbitNotificationService(template, objectMapper);
+    public Binding declareBindingGeneric() {
+        return new Binding("payments", Binding.DestinationType.QUEUE, "payments-exchange", "", null);
     }
+
+    @Bean
+    Queue queue() {
+        return new Queue(queueName);
+    }
+
 
     @Bean
     FanoutExchange exchange() {
         return new FanoutExchange(fanoutExchangeName);
     }
-
 
     @Bean
     public RabbitTemplate rabbitTemplate(final ConnectionFactory connectionFactory, final Jackson2JsonMessageConverter converter) {
@@ -48,6 +53,12 @@ public class ApplicationConfiguration {
         objectMapper.registerModule(new JavaTimeModule());
         return new Jackson2JsonMessageConverter(objectMapper);
     }
+
+    @Bean
+    public PaymentNotificationService paymentNotificationService(RabbitTemplate template, ObjectMapper objectMapper) {
+        return new RabbitNotificationService(template, objectMapper);
+    }
+
     //...............................................................................................
 
     @Bean
@@ -61,17 +72,11 @@ public class ApplicationConfiguration {
     }
 
 
-    @Bean
-    Queue queue() {
-        return new Queue(queueName, false);
-    }
 
 
 
-    @Bean
-    public Binding declareBindingGeneric() {
-        return new Binding("payments", Binding.DestinationType.QUEUE, "payments-exchange", "", null);
-    }
+
+
 
 
 }
