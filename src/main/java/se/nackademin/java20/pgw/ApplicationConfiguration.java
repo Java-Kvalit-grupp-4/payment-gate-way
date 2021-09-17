@@ -27,7 +27,7 @@ public class ApplicationConfiguration {
 
     @Bean
     public Binding declareBindingGeneric() {
-        return new Binding("payments", Binding.DestinationType.QUEUE, "payments-exchange", "", null);
+        return new Binding(queueName, Binding.DestinationType.QUEUE, fanoutExchangeName, "", null);
     }
 
     @Bean
