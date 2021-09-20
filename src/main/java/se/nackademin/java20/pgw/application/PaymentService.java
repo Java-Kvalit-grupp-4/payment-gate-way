@@ -34,7 +34,7 @@ public class PaymentService {
     @Transactional
     public void performPayments() {
         LOG.info("Checking payments to be performed");
-        Duration duration = Duration.ofSeconds(10);
+        Duration duration = Duration.ofSeconds(60);
         List<Payment> payments = paymentRepository.finalAllUnpaid()
                 .stream()
                 .filter(p -> p.getCreated().plus(duration).isBefore(Instant.now()))
