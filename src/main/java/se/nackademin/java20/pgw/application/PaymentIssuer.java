@@ -17,6 +17,9 @@ public class PaymentIssuer {
         this.paymentService = paymentService;
     }
 
+    /**
+     * every 5 sec does this preform payments
+     */
     @Scheduled(fixedRate = 5000)
     public void scheduleFixedDelayTask() {
         LOG.info("Checking payment statuses..");

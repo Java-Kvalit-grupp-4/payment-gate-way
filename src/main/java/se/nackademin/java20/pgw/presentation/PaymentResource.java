@@ -15,6 +15,11 @@ public class PaymentResource {
         this.paymentService = paymentService;
     }
 
+    /**
+     * call on a method that create a new order with the incoming order-number
+     * @param paymentDto includes a order-number and a total amount to be paid
+     * @return
+     */
     @PostMapping("/payment")
     public ResponseEntity<Void> createPayment(@RequestBody PaymentDto paymentDto) {
         paymentService.createPayment(paymentDto.getReference());

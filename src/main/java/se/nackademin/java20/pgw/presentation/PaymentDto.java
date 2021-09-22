@@ -1,5 +1,8 @@
 package se.nackademin.java20.pgw.presentation;
 
+/**
+ * the incoming objet from Hakims backend
+ */
 public class PaymentDto {
     private String reference;
     private long amount;

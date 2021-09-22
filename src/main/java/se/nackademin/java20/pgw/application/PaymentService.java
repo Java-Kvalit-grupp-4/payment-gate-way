@@ -23,6 +23,11 @@ public class PaymentService {
         this.paymentNotificationService = paymentNotificationService;
     }
 
+    /**
+     * Creates a new payment with the incoming order-number
+     * @param reference
+     * @return the created Payment
+     */
     @Transactional
     public Payment createPayment(String reference) {
         LOG.info("Creating payment");
@@ -31,6 +36,10 @@ public class PaymentService {
         return created;
     }
 
+    /**
+     * Every 60 sec this method thecks if there is any unpaid Payments in the db
+     * if it is that payment will be handled in handlePayment
+     */
     @Transactional
     public void performPayments() {
         LOG.info("Checking payments to be performed");
@@ -43,6 +52,10 @@ public class PaymentService {
         payments.forEach(this::handlePayment);
     }
 
+    /**
+     * Saves the incoming Payment to the db and sends a message to HakimLivs backend
+     * @param payment
+     */
     private void handlePayment(Payment payment) {
         LOG.info("Marking payment {} as paid", payment.getId());
         payment.markAsPaid();

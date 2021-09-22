@@ -11,6 +11,12 @@ public class PaymentMessageDto {
     @JsonProperty("status")
     private final String status;
 
+    /**
+     * This is the object we are sending to Hakim Livs
+     * @param reference is the order-number
+     * @param paymentId a generated id of this payment
+     * @param status CREATED or PAID
+     */
     @JsonCreator
     public PaymentMessageDto(@JsonProperty("reference") String reference, @JsonProperty("paymentId") String paymentId, @JsonProperty("status") String status) {
         this.reference = reference;

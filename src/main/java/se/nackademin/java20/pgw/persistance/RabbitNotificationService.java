@@ -21,6 +21,10 @@ public class RabbitNotificationService implements PaymentNotificationService {
         this.objectMapper = objectMapper;
     }
 
+    /**
+     * Sends a message to Hakims backend whit the information when a order is created and paid
+     * @param payment
+     */
     @Override
     public void notifyPaid(Payment payment) {
         try {

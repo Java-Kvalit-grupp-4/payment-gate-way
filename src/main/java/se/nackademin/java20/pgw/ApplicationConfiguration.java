@@ -17,6 +17,10 @@ import se.nackademin.java20.pgw.persistance.RabbitNotificationService;
 
 import javax.persistence.EntityManager;
 
+/**
+ * Creating queue, exchange and binding them
+ * The exchange needs to be the same as in hakims backend
+ */
 @Configuration
 @EnableScheduling
 public class ApplicationConfiguration {
